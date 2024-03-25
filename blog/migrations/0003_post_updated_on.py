@@ -31,6 +31,8 @@ class Comment(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(User, related_name='comment_likes', blank=True)
     dislikes = models.ManyToManyField(User, related_name='comment_dislikes', blank=True)
+    level = models.PositiveIntegerField(default=0)
+    edited_on = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ["created_on"]
@@ -57,3 +59,12 @@ class Comment(models.Model):
     @property
     def dislikes_count(self):
         return self.dislikes.count()
+    
+    def edit(self, body):
+        self.body = body
+        self.edited_on = timezone.now()
+        self.save()
+
+    def delete(self):
+        self.is_deleted = True
+        self.save()
