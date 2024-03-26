@@ -5,7 +5,21 @@ from django.contrib.auth.models import User
 
 STATUS = ((0, "Draft"), (1, "Published"))
 
-# Blogpost titles have unique names to prven having the same name to confuse users
+class Tag(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
+# Blogpost titles have unique names to prevent having the same name to confuse users
 class Post(models.Model):
     title = models.CharField(max_length = 200, unique=True)
     slug = models.SlugField(max_length = 200, unique = True)
@@ -18,6 +32,10 @@ class Post(models.Model):
     status = models.IntegerField(choices=STATUS, default=0)
     excerpt = models.TextField(blank=True)
     updated_on = models.DateTimeField(auto_now=True)
+    likes = models.ManyToManyField(User, related_name='post_likes', blank=True)
+    dislikes = models.ManyToManyField(User, related_name='post_dislikes', blank=True)
+    tags = models.ManyToManyField(Tag, related_name='posts', blank=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='posts', blank=True, null=True)
 
 
     class Comment(models.Model):
